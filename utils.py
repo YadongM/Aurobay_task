@@ -1,45 +1,72 @@
 # Coding for the Aurobay interview 
 # Coding start 14-Jun-2022
 
-def read_csv(filePath: str, column: bool = True, anormalCheck: bool = False) -> list[list[str]]:
+def read_csv(filePath: str, issplit: bool = True) -> list:
+    """Read csv file by line
+
+    Args:
+        filePath (str): Path of csv file.
+        issplit (bool, optional): Determine whether split line by ','
+                                  Default True.
+
+    Returns:
+        list: A list of csv content, every factor is one line split by ','
+    """
+    inputStream = list()
+    with open(filePath) as csv_file:
+        for line in csv_file:
+            tmp = line.split(',') if issplit else line
+            inputStream.append( tmp )
+    return inputStream
+
+
+def read_csv_content(filePath: str, haveHeader: bool = True, delNewline: bool = True, anormalCheck: bool = False) -> list[list[str]]:
     """Read csv file and return peer column.
 
     Args:
         filePath (str): Path of csv file.
-        column_name (bool, optional): Determine whether the returned list contains headers.
-                                      If Ture, the frist factor of sublist is heaer.
+        delNewline (bool, optional): Determine whether delete '\n'.
                                       Default Ture.
         anormalCheck (bool, optional): Check if there abnormal value: Nan, Null , Blank.
                                        Default False.
 
     Returns:
-        list[list]: Secondary list, each sublist contains a column in the csv.
-                    The factor of sublist is str.
+        dict[list]: A dictory of all data
+                    key: The header of csv file, if header is null will be replace to category and index.
+                    value: The column of this header
     """
-    
-    with open(filePath) as csv_file:
-        columnName = csv_file.readline().split(',')
-        numColumn = len(columnName)
+    inputStream = read_csv(filePath)
 
-        data = [list() for _ in range(numColumn)]
-        if column:
-            # Add header to the list
-            for idx in range(numColumn):
-                data[idx].append(columnName[idx].replace('\n', ''))
-                
-        # Add contain to list
-        for rowNum, line in enumerate(csv_file):
-            line = line.split(',')
-            for idx in range(numColumn):
-                
-                # Check wether there is any anomal value
-                if anormalCheck:
-                    if line[idx] == 'Nan' or line[idx] == 'Null' or len( line[idx].replace('\n', '') ) ==  0:
-                        print("Please check value at Column {} Row {}!".format(columnName[idx], rowNum) )
+    if haveHeader:
+        columnName = inputStream.pop(0)
+        for idx, column in enumerate(columnName):
+            if column == '':
+                columnName[idx] = 'category'+str(idx)
+            if '\n' in column:
+                columnName[idx] = column.replace('\n', '')
+    else:
+        columnName = ['category'+str(i) for i in range(len(inputStream[0]))]
 
-                # Add contain to sublist
-                data[idx].append(line[idx].replace('\n', ''))
-    
+
+    data = dict()
+    for idx, column in enumerate(columnName):
+        data[column] = list()
+            
+    # Add contain to list
+    for rowNum, line in enumerate(inputStream):
+        line = line
+        for idx, column in enumerate(columnName):
+
+            # Check wether there is any anomal value
+            if anormalCheck:
+                if line[idx] == 'Nan' or line[idx] == 'Null' or len( line[idx].replace('\n', '') ) ==  0:
+                    print("Please check value at Column {} Row {}!".format(columnName[idx], rowNum) )
+
+            # Check wether need to delete "\n"
+            tmp = line[idx].replace('\n', '') if delNewline else line[idx]
+            
+            data[column].append(tmp)
+
     return data
 
 

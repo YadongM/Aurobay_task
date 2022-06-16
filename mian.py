@@ -5,22 +5,22 @@ from utils import *
 
 # Question 1
 csvPath =  r"C:\\Users\\M\\Project\\Aurobay_task\\data\\datatset.csv"
-data = read_csv(csvPath, False)
+data = read_csv_content(csvPath)
 
 # Question 2
-deptSalary = getCategoryAverage(data[3],data[12])
+deptSalary = getCategoryAverage(data['Dept'],data['salary'])
 for dept in deptSalary:
     print("{} department has average salary {:.2f}.".format(dept, deptSalary[dept]))
 print('\n')
 
 # Question 3
-deptReward = getCategorySum(data[3],data[10])
+deptReward = getCategorySum(data['Dept'],data['awards'])
 for dept in deptReward:
     print("{} department have total {:.0f} reaward.".format(dept, deptReward[dept]))
 print('\n')
 
 # Question 4
-levelDeptAveSalary = getTwoCategoryAverage(data[7], data[3], data[12])
+levelDeptAveSalary = getTwoCategoryAverage(data['job_level'], data['Dept'], data['salary'])
 
 # Question 4.a
 depts = [dept for dept in levelDeptAveSalary['5']]
