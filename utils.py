@@ -2,7 +2,7 @@
 # Coding start 14-Jun-2022
 
 def read_csv(filePath: str, column: bool = True, anormalCheck: bool = False) -> list[list[str]]:
-    """Read csv file and return peer column
+    """Read csv file and return peer column.
 
     Args:
         filePath (str): Path of csv file.
@@ -43,83 +43,133 @@ def read_csv(filePath: str, column: bool = True, anormalCheck: bool = False) -> 
     return data
 
 
-def dataSort(categories: list, vals: list) -> dict:
-    """Sort two list in the list1 index
-
+def getCategoryIndex(categories: list) -> dict:
+    """Get the list index in different category
     Args:
         categories (list): The categories list to find index
-        vals (list): The value list to get value by categories list index
-
     Returns:
         dict: A dictory of result
               key: Different categories, 
-              value: a list context the value belong to this category
+              value: The index of this category.
     """
-    if len(categories) != len(vals):
-        return "Please check input"
-
-    # Get the name of all department
+    # Get the name of all categories
     diffCategory = list(set(categories))
-    categoryIndex = [list() for _ in range(len(diffCategory))]
+    categoryIndex = dict()
+    for cat in diffCategory:
+        categoryIndex[cat] = list()
 
-    # Get the index of different department
+    # Get the index of different category
     for idx, cat in enumerate(categories):
-        categoryIndex[diffCategory.index(cat)].append(idx)
+        categoryIndex[cat].append(idx)
 
-    # Sort data in different category
-    categoryValues = dict()
-    for idx, cat in enumerate(diffCategory):
-        # Put all salarys of one department in a list
-        _tmp = [vals[i] for i in categoryIndex[idx]]
-        categoryValues[cat] = _tmp
+    return categoryIndex
 
-    return categoryValues
 
-def calDeptAverageSalary(depts: list, salary: list) -> dict:
-    """Calculate the average of differernt department
-
+def getCategoryAverage(categories: list, values: list, dataType: str = 'float') -> dict :
+    """Calculate the average value of differernt categories.
     Args:
-        depts (list): The list of department, have corresponding relationship with salary list 
-        salary (list): The list of salary, have corresponding relationship with department list 
-
+        categories (list): Category list
+        values (list): Value list
+        dataType (str, optional): The values data type. Defaults to 'float'.
     Returns:
         dict: A dictory of result
-              key: Different department, 
-              value: The average salary of this department
+              key: Different category, 
+              value: The average value of this category
     """
+
     # Sort the data in different category
-    deptSalary = dataSort(depts, salary)
+    catIndex = getCategoryIndex(categories)
 
     # Store the average result
-    deptAverage = dict()
-    for dept in deptSalary:
-        # data type conversion
-        tmp = [float(i) for i in deptSalary[dept]]
-        deptAverage[dept] = sum( tmp )/len( tmp )
-    return deptAverage
+    catAverage = dict()
+    for cat in catIndex:
+        # Get corresponding value and convert data type
+        if dataType == 'int':
+            tmp = [int(values[i]) for i in catIndex[cat]]
+        tmp = [float(values[i]) for i in catIndex[cat]]
+        catAverage[cat] = sum( tmp )/len( tmp )
+    return catAverage
 
 
-
-def findTotalReward(depts: list, awards: list) -> dict :
-    """Calculate the most reward of differernt department
-
+def getCategorySum(depts: list, values: list, dataType: str = 'float') -> dict :
+    """Calculate the sum value of differernt categories.
     Args:
-        depts (list): The list of department, have corresponding relationship with reward list 
-        salary (list): The list of reward, have corresponding relationship with department list 
-
+        categories (list): Category list
+        values (list): Value list
+        dataType (str, optional): The values data type. Defaults to 'float'.
     Returns:
         dict: A dictory of result
-              key: Different department, 
-              value: The total reward of this department
+              key: Different category, 
+              value: The sum value of this category
     """
     # Sort the data in different category
-    deptAwards = dataSort(depts, awards)
+    catIndex = getCategoryIndex(depts)
 
     # Store the average result
-    deptTotalAward = dict()
-    for dept in deptAwards:
+    catSum = dict()
+    for cat in catIndex:
         # data type conversion
-        tmp = [int(i) for i in deptAwards[dept]]
-        deptTotalAward[dept] = sum( tmp )
-    return deptTotalAward
+        if dataType == 'int':
+            tmp = [int(values[i]) for i in catIndex[cat]]
+        tmp = [float(values[i]) for i in catIndex[cat]]
+        catSum[cat] = sum( tmp )
+    return catSum
 
+
+
+
+def getTwoCategoryIndex(cats1, cats2) -> dict:
+    """Get index of category 2 under category 1.
+    Args:
+        cats1 (list): The categories list to find index
+        cats2 (list): The sub categories list to find index
+    Returns:
+        dict: A dictory of result
+              key: Different categories, 
+              value: A dictory of result
+                    key: Different subcategories, 
+                    value: The index of this subcategory.
+    """
+    catsIndex = dict()
+    tmp_index_1 = getCategoryIndex(cats1)
+    for cat1 in tmp_index_1:
+        catsIndex[cat1] = dict()
+        tmp_Value_1 = [cats2[i] for i in tmp_index_1[cat1]]
+        tmp_index_2 = getCategoryIndex(tmp_Value_1)
+
+        for cat2 in tmp_index_2:
+            tmp = [tmp_index_1[cat1][i] for i in tmp_index_2[cat2]]
+            catsIndex[cat1][cat2] = tmp
+                
+    return catsIndex
+
+def getTwoCategoryAverage(cats1: list, cats2: list, values: list, dataType: str = 'float') -> dict :
+    """Calculate the average value of category 2 under category 1.
+    Args:
+        cats1 (list): Category list
+        cats2 (list): Category list
+        values (list): Value list
+        dataType (str, optional): The values data type. Defaults to 'float'.
+    Returns:
+        dict: A dictory of result
+              key: Different category, 
+              value: A dictory of result
+                    key: Different subcategories, 
+                    value: The average of this subcategory.
+    """
+
+    # Sort the data in different category
+    catsIndex = getTwoCategoryIndex(cats1, cats2)
+
+    # Store the average result
+    catAverage = dict()
+    for cat1 in catsIndex:
+        catAverage[cat1] = dict()
+        for cat2 in catsIndex[cat1]:
+        # Get corresponding value and convert data type
+            if dataType == 'int':
+                tmp = [int(values[i]) for i in catsIndex[cat1][cat2]]
+            tmp = [float(values[i]) for i in catsIndex[cat1][cat2]]
+            catAverage[cat1][cat2] = sum( tmp )/len( tmp )
+
+    return catAverage
