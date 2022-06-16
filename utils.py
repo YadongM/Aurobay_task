@@ -17,6 +17,7 @@ def read_csv(filePath: str, issplit: bool = True) -> list:
         for line in csv_file:
             tmp = line.split(',') if issplit else line
             inputStream.append( tmp )
+            
     return inputStream
 
 
