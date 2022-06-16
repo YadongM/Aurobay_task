@@ -1,5 +1,6 @@
 # Coding for the Aurobay interview 
-# Coding start 14-Jun-2022
+# Coding start 16-Jun-2022
+# More elegant method
 
 def read_csv(filePath: str, issplit: bool = True) -> list:
     """Read csv file by line
@@ -20,184 +21,199 @@ def read_csv(filePath: str, issplit: bool = True) -> list:
             
     return inputStream
 
-
-def read_csv_content(filePath: str, haveHeader: bool = True, delNewline: bool = True, anormalCheck: bool = False) -> list[list[str]]:
-    """Read csv file and return peer column.
+class Employee(object):
+    """Class of employee, include all data property
 
     Args:
-        filePath (str): Path of csv file.
-        delNewline (bool, optional): Determine whether delete '\n'.
-                                      Default Ture.
-        anormalCheck (bool, optional): Check if there abnormal value: Nan, Null , Blank.
-                                       Default False.
-
-    Returns:
-        dict[list]: A dictory of all data
-                    key: The header of csv file, if header is null will be replace to category and index.
-                    value: The column of this header
+        object (_type_): _description_
     """
-    inputStream = read_csv(filePath)
+    def __init__(self, value: list):
+        self.index = value[0]
+        self.emp_id = value[1]
+        self.age = value[2]
+        self.Dept = value[3]
+        self.location = value[4]
+        self.education = value[5]
+        self.recruitment_type = value[6]
+        self.job_level = value[7]
+        self.rating = value[8]
+        self.onsite = value[9]
+        self.awards = value[10]
+        self.certifications = value[11]
+        self.salary = value[12]
+        self.satisfied = value[13]
 
-    if haveHeader:
-        columnName = inputStream.pop(0)
-        for idx, column in enumerate(columnName):
-            if column == '':
-                columnName[idx] = 'category'+str(idx)
-            if '\n' in column:
-                columnName[idx] = column.replace('\n', '')
-    else:
-        columnName = ['category'+str(i) for i in range(len(inputStream[0]))]
 
+class Survey(object):
+    """Class of this survey
 
-    data = dict()
-    for idx, column in enumerate(columnName):
-        data[column] = list()
+    Args:
+        object (_type_): _description_
+    """
+    def __init__(self, inputStream: list, exitHeader: bool = True, delNewline: bool = True):
+        """initialize Survey class
+
+        Args:
+            inputStream (list): All the data read from csv file
+            exitheader (bool, optional): Whether to include column names. 
+                                         Defaults to True.
+            delNewline (bool, optional): Whether to remove all newlines. 
+                                         Defaults to True.
+        """
+        if exitHeader:
+            header = inputStream.pop(0)
+            if delNewline:
+                header = [i.replace('\n', '') for i in header]
+        else: header = ['category'+str(idx) for idx in range(len(inputStream[0]))]
+
+        # Add column names to the class
+        self.header = header
+
+        # Add all employee as Employee class
+        self.employeeSet = []
+        for line in inputStream:
+            line = [i.replace("\n", '') for i in line] if delNewline else line
+            self.employeeSet.append(Employee(line))
+    
+
+    def sortCategory(self, category: list, tmpEmployeeSet: list = [], catEmployeeSet: dict = dict()) -> dict: 
+        """The number of categories of the input is adaptive, 
+           and all categories of the input are classified in turn through DFS method.
+
+        Args:
+            category (list): All categories need to be classified.
+            tmpEmployeeSet (list, optional): Used as a list as the final classification result, the element is the class. 
+                                             Defaults to [].
+            catEmployeeSet (dict, optional): The dictory to store current Category Results. 
+                                             Defaults to dict().
+
+        Returns:
+            dict: A  nested dictory.
+                  Key: All categories of the first element of category
+                  Value: A nested dictory.
+                        Key: All categories of the second element of category
+                        ......
+                        value: A list of employee class meet all key conditions
+        """
+
+        if not tmpEmployeeSet:
+            tmpEmployeeSet = self.employeeSet
+        
+        # Get all element of first category
+        cats = [getattr(i, category[0]) for i in tmpEmployeeSet]
+        # Remove duplicates
+        diffcats = list( set( cats ) )
+
+        # Bulid the dictory of first category
+        catEmployeeSet = dict()
+        for cat in diffcats:
+            catEmployeeSet[cat] = list()
+
+        # Add employee class satisfied this cat
+        for idx, cat in enumerate(cats):
+            catEmployeeSet[cat].append(tmpEmployeeSet[idx])
+
+        # For every cat, iteratively filter the next level of category
+        for cat in catEmployeeSet:
+            if len(category[1:]) == 0:
+                continue
+            catEmployeeSet[cat] = self.sortCategory(category[1:], catEmployeeSet[cat], catEmployeeSet[cat])
+
+        return catEmployeeSet
+    
+
+    def getCategoryAverage(self, category: list, value: str) -> dict:
+        """Get the average values satisfy all categories in category list
+           Using DFS method
+
+        Args:
+            category (list): All the categories need to satisfy
+            value (str): The name of column to calculate average  
+
+        Returns:
+            dict: A dictory of average values satisfy all categories
+                  key: cats of the first category
+                  value: A dictory of subcategory
+                        key: cats of the second category
+                        ...
+                        value: The average value satisfy all the keys
+        """
+        def calCategoryAverage(catsEmployeeSet: dict, value: str, averageValue: dict = dict()):
+            """Used to iterate to the last layer and calculate the average
+
+            Args:
+                catsEmployeeSet (dict): A classified dictionary with employee
+                value (str): The name of column to calculate average 
+                averageValue (dict, optional): Dictionary for storing results. Defaults to dict().
+
+            Returns:
+                _type_:Dictionary for storing iterative results.
+            """
+            # Iterate to the last layer through DFS method
+            for cat in catsEmployeeSet:
+                averageValue[cat] = dict()
+
+                # If it is the last layer, start the calculate average
+                if type(catsEmployeeSet[cat]) == list:
+                    tmp = [float(getattr(i, value)) for i in catsEmployeeSet[cat]]
+                    averageValue[cat] = sum(tmp) / len(tmp)
+                    continue
+
+                # If not the last layer continue to iterate the next layer
+                averageValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, averageValue = dict())
+            return averageValue
             
-    # Add contain to list
-    for rowNum, line in enumerate(inputStream):
-        line = line
-        for idx, column in enumerate(columnName):
+        # Get a sorted dictory
+        catsEmployeeSet = self.sortCategory(category)
 
-            # Check wether there is any anomal value
-            if anormalCheck:
-                if line[idx] == 'Nan' or line[idx] == 'Null' or len( line[idx].replace('\n', '') ) ==  0:
-                    print("Please check value at Column {} Row {}!".format(columnName[idx], rowNum) )
-
-            # Check wether need to delete "\n"
-            tmp = line[idx].replace('\n', '') if delNewline else line[idx]
-            
-            data[column].append(tmp)
-
-    return data
-
-
-def getCategoryIndex(categories: list) -> dict:
-    """Get the list index in different category
-    Args:
-        categories (list): The categories list to find index
-    Returns:
-        dict: A dictory of result
-              key: Different categories, 
-              value: The index of this category.
-    """
-    # Get the name of all categories
-    diffCategory = list(set(categories))
-    categoryIndex = dict()
-    for cat in diffCategory:
-        categoryIndex[cat] = list()
-
-    # Get the index of different category
-    for idx, cat in enumerate(categories):
-        categoryIndex[cat].append(idx)
-
-    return categoryIndex
-
-
-def getCategoryAverage(categories: list, values: list, dataType: str = 'float') -> dict :
-    """Calculate the average value of differernt categories.
-    Args:
-        categories (list): Category list
-        values (list): Value list
-        dataType (str, optional): The values data type. Defaults to 'float'.
-    Returns:
-        dict: A dictory of result
-              key: Different category, 
-              value: The average value of this category
-    """
-
-    # Sort the data in different category
-    catIndex = getCategoryIndex(categories)
-
-    # Store the average result
-    catAverage = dict()
-    for cat in catIndex:
-        # Get corresponding value and convert data type
-        if dataType == 'int':
-            tmp = [int(values[i]) for i in catIndex[cat]]
-        tmp = [float(values[i]) for i in catIndex[cat]]
-        catAverage[cat] = sum( tmp )/len( tmp )
-    return catAverage
-
-
-def getCategorySum(depts: list, values: list, dataType: str = 'float') -> dict :
-    """Calculate the sum value of differernt categories.
-    Args:
-        categories (list): Category list
-        values (list): Value list
-        dataType (str, optional): The values data type. Defaults to 'float'.
-    Returns:
-        dict: A dictory of result
-              key: Different category, 
-              value: The sum value of this category
-    """
-    # Sort the data in different category
-    catIndex = getCategoryIndex(depts)
-
-    # Store the average result
-    catSum = dict()
-    for cat in catIndex:
-        # data type conversion
-        if dataType == 'int':
-            tmp = [int(values[i]) for i in catIndex[cat]]
-        tmp = [float(values[i]) for i in catIndex[cat]]
-        catSum[cat] = sum( tmp )
-    return catSum
+        averageValue = calCategoryAverage(catsEmployeeSet, value)
+        return averageValue
 
 
 
 
-def getTwoCategoryIndex(cats1, cats2) -> dict:
-    """Get index of category 2 under category 1.
-    Args:
-        cats1 (list): The categories list to find index
-        cats2 (list): The sub categories list to find index
-    Returns:
-        dict: A dictory of result
-              key: Different categories, 
-              value: A dictory of result
-                    key: Different subcategories, 
-                    value: The index of this subcategory.
-    """
-    catsIndex = dict()
-    tmp_index_1 = getCategoryIndex(cats1)
-    for cat1 in tmp_index_1:
-        catsIndex[cat1] = dict()
-        tmp_Value_1 = [cats2[i] for i in tmp_index_1[cat1]]
-        tmp_index_2 = getCategoryIndex(tmp_Value_1)
+    def getCategorySum(self, category, value):
+        """Get the sum values satisfy all categories in category list
+           Using DFS method
 
-        for cat2 in tmp_index_2:
-            tmp = [tmp_index_1[cat1][i] for i in tmp_index_2[cat2]]
-            catsIndex[cat1][cat2] = tmp
-                
-    return catsIndex
+        Args:
+            category (list): All the categories need to satisfy
+            value (str): The name of column to calculate sum  
 
-def getTwoCategoryAverage(cats1: list, cats2: list, values: list, dataType: str = 'float') -> dict :
-    """Calculate the average value of category 2 under category 1.
-    Args:
-        cats1 (list): Category list
-        cats2 (list): Category list
-        values (list): Value list
-        dataType (str, optional): The values data type. Defaults to 'float'.
-    Returns:
-        dict: A dictory of result
-              key: Different category, 
-              value: A dictory of result
-                    key: Different subcategories, 
-                    value: The average of this subcategory.
-    """
+        Returns:
+            dict: A dictory of sum values satisfy all categories
+                  key: cats of the first category
+                  value: A dictory of subcategory
+                        key: cats of the second category
+                        ...
+                        value: The average value satisfy all the keys
+        """
 
-    # Sort the data in different category
-    catsIndex = getTwoCategoryIndex(cats1, cats2)
+        def calCategoryAverage(catsEmployeeSet, value, sumAgeValue = dict()):
+            """Used to iterate to the last layer and calculate the sum
 
-    # Store the average result
-    catAverage = dict()
-    for cat1 in catsIndex:
-        catAverage[cat1] = dict()
-        for cat2 in catsIndex[cat1]:
-        # Get corresponding value and convert data type
-            if dataType == 'int':
-                tmp = [int(values[i]) for i in catsIndex[cat1][cat2]]
-            tmp = [float(values[i]) for i in catsIndex[cat1][cat2]]
-            catAverage[cat1][cat2] = sum( tmp )/len( tmp )
+            Args:
+                catsEmployeeSet (dict): A classified dictionary with employee
+                value (str): The name of column to calculate sum 
+                sumAgeValue (dict, optional): Dictionary for storing results. Defaults to dict().
 
-    return catAverage
+            Returns:
+                _type_: Dictionary for storing iterative results.
+            """
+            # Iterate to the last layer through DFS method
+            for cat in catsEmployeeSet:
+                sumAgeValue[cat] = dict()
+                # If it is the last layer, start the calculate sum
+                if type(catsEmployeeSet[cat]) == list:
+                    tmp = [float(getattr(i, value)) for i in catsEmployeeSet[cat]]
+                    sumAgeValue[cat] = sum(tmp)
+                    continue
+
+                # If not the last layer continue to iterate the next layer
+                sumAgeValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, sumAgeValue = dict())
+            return sumAgeValue
+
+        # Get a sorted dictory
+        catsEmployeeSet = self.sortCategory(category)
+        sumAgeValue = calCategoryAverage(catsEmployeeSet, value)
+        return sumAgeValue
