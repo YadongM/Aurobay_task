@@ -11,7 +11,8 @@ Wish me luck!
 4.  For each job level, find the average salary for each department.
 4a. Compare which department pays on average highest for job level 5.
 
-
+## Version1
+Base column method, function
 ### Function
 read_csv : Read csv file and return peer column.
 
@@ -24,3 +25,11 @@ getCategorySum: Calculate the sum value of differernt categories.
 getTwoCategoryIndex: Get index of category 2 under category 1
 
 getTwoCategoryAverage: Calculate the average value of category 2 under category 1
+
+
+## Version2
+Base row, adaptive method, class
+
+
+## Version3
+Base row, adaptive method, function
