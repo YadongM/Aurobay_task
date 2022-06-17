@@ -93,10 +93,10 @@ def getCategoryIndex(categories: list) -> dict:
     return categoryIndex
 
 
-def getCategoryAverage(categories: list, values: list, dataType: str = 'float') -> dict :
-    """Calculate the average value of differernt categories.
+def getCategoryAverage(category: list, values: list, dataType: str = 'float') -> dict :
+    """Calculate the average value of differernt category.
     Args:
-        categories (list): Category list
+        category (list): Category list
         values (list): Value list
         dataType (str, optional): The values data type. Defaults to 'float'.
     Returns:
@@ -106,7 +106,7 @@ def getCategoryAverage(categories: list, values: list, dataType: str = 'float') 
     """
 
     # Sort the data in different category
-    catIndex = getCategoryIndex(categories)
+    catIndex = getCategoryIndex(category)
 
     # Store the average result
     catAverage = dict()
@@ -121,7 +121,7 @@ def getCategoryAverage(categories: list, values: list, dataType: str = 'float') 
 
 
 def getCategorySum(depts: list, values: list, dataType: str = 'float') -> dict :
-    """Calculate the sum value of differernt categories.
+    """Calculate the sum value of differernt category.
     Args:
         categories (list): Category list
         values (list): Value list
