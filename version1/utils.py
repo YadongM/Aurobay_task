@@ -112,10 +112,11 @@ def getCategoryAverage(categories: list, values: list, dataType: str = 'float') 
     catAverage = dict()
     for cat in catIndex:
         # Get corresponding value and convert data type
-        if dataType == 'int':
-            tmp = [int(values[i]) for i in catIndex[cat]]
         tmp = [float(values[i]) for i in catIndex[cat]]
         catAverage[cat] = sum( tmp )/len( tmp )
+        if dataType == 'int':
+            tmp = [int(values[i]) for i in catIndex[cat]]
+            catAverage[cat] = int(sum( tmp )/len( tmp ))
     return catAverage
 
 
@@ -137,9 +138,9 @@ def getCategorySum(depts: list, values: list, dataType: str = 'float') -> dict :
     catSum = dict()
     for cat in catIndex:
         # data type conversion
+        tmp = [float(values[i]) for i in catIndex[cat]]
         if dataType == 'int':
             tmp = [int(values[i]) for i in catIndex[cat]]
-        tmp = [float(values[i]) for i in catIndex[cat]]
         catSum[cat] = sum( tmp )
     return catSum
 

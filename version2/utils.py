@@ -122,13 +122,14 @@ class Survey(object):
         return catEmployeeSet
     
 
-    def getCategoryAverage(self, category: list, value: str) -> dict:
+    def getCategoryAverage(self, category: list, value: str, dataType: str = 'float') -> dict:
         """Get the average values satisfy all categories in category list
            Using DFS method
 
         Args:
             category (list): All the categories need to satisfy
             value (str): The name of column to calculate average  
+            dataType (str): The expect datatype of value. Defaults to 'float.
 
         Returns:
             dict: A dictory of average values satisfy all categories
@@ -138,13 +139,14 @@ class Survey(object):
                         ...
                         value: The average value satisfy all the keys
         """
-        def calCategoryAverage(catsEmployeeSet: dict, value: str, averageValue: dict = dict()):
+        def calCategoryAverage(catsEmployeeSet: dict, value: str, averageValue: dict = dict(), dataType: str = 'float'):
             """Used to iterate to the last layer and calculate the average
 
             Args:
                 catsEmployeeSet (dict): A classified dictionary with employee
                 value (str): The name of column to calculate average 
                 averageValue (dict, optional): Dictionary for storing results. Defaults to dict().
+                dataType (str): The expect datatype of value. Defaults to 'float.
 
             Returns:
                 _type_:Dictionary for storing iterative results.
@@ -157,28 +159,31 @@ class Survey(object):
                 if type(catsEmployeeSet[cat]) == list:
                     tmp = [float(getattr(i, value)) for i in catsEmployeeSet[cat]]
                     averageValue[cat] = sum(tmp) / len(tmp)
+                    if dataType == "int":
+                        tmp = [int(getattr(i, value)) for i in catsEmployeeSet[cat]]
+                        averageValue[cat] = int( sum(tmp) / len(tmp) )
                     continue
 
                 # If not the last layer continue to iterate the next layer
-                averageValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, averageValue = dict())
+                averageValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, averageValue = dict(), dataType = dataType)
             return averageValue
             
         # Get a sorted dictory
         catsEmployeeSet = self.sortCategory(category)
-
-        averageValue = calCategoryAverage(catsEmployeeSet, value)
+        averageValue = calCategoryAverage(catsEmployeeSet, value, dataType = dataType)
         return averageValue
 
 
 
 
-    def getCategorySum(self, category, value):
+    def getCategorySum(self, category: list, value: str, dataType: str = 'float'):
         """Get the sum values satisfy all categories in category list
            Using DFS method
 
         Args:
             category (list): All the categories need to satisfy
             value (str): The name of column to calculate sum  
+            dataType (str): The expect datatype of value. Defaults to 'float.
 
         Returns:
             dict: A dictory of sum values satisfy all categories
@@ -189,31 +194,35 @@ class Survey(object):
                         value: The average value satisfy all the keys
         """
 
-        def calCategoryAverage(catsEmployeeSet, value, sumAgeValue = dict()):
+        def calCategoryAverage(catsEmployeeSet, value, sumValue = dict(), dataType: str = 'float'):
             """Used to iterate to the last layer and calculate the sum
 
             Args:
                 catsEmployeeSet (dict): A classified dictionary with employee
                 value (str): The name of column to calculate sum 
-                sumAgeValue (dict, optional): Dictionary for storing results. Defaults to dict().
+                sumValue (dict, optional): Dictionary for storing results. Defaults to dict().
+                dataType (str): The expect datatype of value. Defaults to 'float.
 
             Returns:
                 _type_: Dictionary for storing iterative results.
             """
             # Iterate to the last layer through DFS method
             for cat in catsEmployeeSet:
-                sumAgeValue[cat] = dict()
+                sumValue[cat] = dict()
                 # If it is the last layer, start the calculate sum
                 if type(catsEmployeeSet[cat]) == list:
                     tmp = [float(getattr(i, value)) for i in catsEmployeeSet[cat]]
-                    sumAgeValue[cat] = sum(tmp)
+                    sumValue[cat] = sum(tmp)
+                    if dataType == "int":
+                        tmp = [int(getattr(i, value)) for i in catsEmployeeSet[cat]]
+                        sumValue[cat] = sum(tmp)
                     continue
 
                 # If not the last layer continue to iterate the next layer
-                sumAgeValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, sumAgeValue = dict())
-            return sumAgeValue
+                sumValue[cat] = calCategoryAverage(catsEmployeeSet[cat], value, sumValue = dict(), dataType = dataType)
+            return sumValue
 
         # Get a sorted dictory
         catsEmployeeSet = self.sortCategory(category)
-        sumAgeValue = calCategoryAverage(catsEmployeeSet, value)
-        return sumAgeValue
+        sumValue = calCategoryAverage(catsEmployeeSet, value, dataType = dataType)
+        return sumValue
