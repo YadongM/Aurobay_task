@@ -18,54 +18,55 @@ Wish me luck!
 > * 4a. Compare which department pays on average highest for job level 5.
 
 ## Version1
-Base column method, function
+Base column, function
 
 ### Function
 * read_csv() : Read csv file by line.
 
 * read_csv_content() : Read csv file and return peer processed column.
 
-* getCategoryIndex() : Get the list index in different category.
+* getCategoryIndex() : Get the list index in different categories.
 
-* getCategoryAverage() : Calculate the average value of differernt category.
+* getCategoryAverage() : Calculate the average value of different categories.
 
-* getCategorySum() : Calculate the sum value of differernt category.
+* getCategorySum() : Calculate the sum value of different categories.
 
-* getTwoCategoryIndex() : Get list index of category 2 under category 1.
+* getTwoCategoryIndex() : Get the list index of category 2 under category 1.
 
 * getTwoCategoryAverage() : Calculate the average value of category 2 under category 1.
 
 
 ## Version2
-* Base row, adaptive method, class
+* Base row, adaptive, class
 
 ### Function
 read_csv : Read csv file by line.
 
 
 ### Class
-Employee : Class of employee, include all data property
+Employee: Class of the employee, including all data property
 
 * All data property
 
 
-Survey : Class of this survey.
+Survey: Class of this survey.
 
-* Survey.header : List include all column name.
 
-* Survey.employeeSet : List include all emploee class.
+* Survey.header : The list includes all column names.
 
-* Survey.sortCategory() : All categories of the input are classified in turn through DFS method, the number of categories of the input is adaptive.
+* Survey.employeeSet : The list includes all employee classes.
 
-* Survey.getCategoryAverage() : Get the average values satisfy all categories in category list, using DFS method, the number of categories of the input is adaptive.
+* Survey.sortCategory() : All input categories are classified in turn through DFS method. The number of categories of the input is adaptive.
 
-* Survey.getCategorySum() : Get the sum values satisfy all categories in category list, using DFS method, the number of categories of the input is adaptive.
+* Survey.getCategoryAverage() : Get the average values that satisfy all categories in the category list. Using DFS method, the number of categories of the input is adaptive.
+
+* Survey.getCategorySum() : Get the sum values that satisfy all categories in the category list. Using DFS method, the number of categories of the input is adaptive.
 
 
 
 
 ## Version3
-Base row, adaptive method, function
+Base row, adaptive, function
 
 ### Function
 
@@ -73,8 +74,8 @@ Base row, adaptive method, function
 
 * read_csv_content() : Read csv file and return peer processed row.
 
-* sortCategory() : All categories of the input are classified in turn through DFS method, the number of categories of the input is adaptive.
+* sortCategory() : All input categories are classified in turn through DFS method. The number of categories of the input is adaptive.
 
-* getCategoryAverage() : Get the average values satisfy all categories in category list, using DFS method, the number of categories of the input is adaptive.
+* getCategoryAverage() : Get the average values that satisfy all categories in the category list. Using DFS method, the number of categories of the input is adaptive.
 
-* getCategorySum() : Get the sum values satisfy all categories in category list, using DFS method, the number of categories of the input is adaptive.
+* getCategorySum() : Get the sum values that satisfy all categories in the category list. Using DFS method, the number of categories of the input is adaptive.

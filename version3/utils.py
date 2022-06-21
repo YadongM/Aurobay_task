@@ -22,7 +22,7 @@ def read_csv(filePath: str, issplit: bool = True) -> list:
     return inputStream
 
 
-def read_csv_content(filePath: str, haveHeader: bool = True, delNewline: bool = True, anormalCheck: bool = False) -> list[list[str]]:
+def read_csv_content(filePath: str, haveHeader: bool = True, delNewline: bool = True, anormalCheck: bool = False) -> list:
     """Read csv file and return peer column.
 
     Args:
@@ -33,9 +33,9 @@ def read_csv_content(filePath: str, haveHeader: bool = True, delNewline: bool = 
                                        Default False.
 
     Returns:
-        dict[list]: A dictory of all data
+        dict[list]: Include dictorys, every dictory is an employee information
                     key: The header of csv file, if header is null will be replace to category and index.
-                    value: The column of this header
+                    value: The information of this information in this inforamtion category
     """
     inputStream = read_csv(filePath)
 
